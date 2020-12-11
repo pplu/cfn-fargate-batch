@@ -158,7 +158,6 @@ of Fargate:
  - `Type: container`: [supported](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-jobdefinition.html#cfn-batch-jobdefinition-type)
  - `ContainerProperties`: [supported](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-containerproperties.html)
  - `ResourceRequirements`: [supported](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-resourcerequirement.html) with special mentions for Fargate
-> For jobs running on Fargate resources, then value is the hard limit (in GiB), represented in decimal form, and must match one of the supported values (0.5 and whole numbers between 1 and 30, inclusive) and the VCPU values must be one of the values supported for that memory value
  - `FargatePlatformConfiguration`: not in the resource, but mayeb CloudFormation will just use the latest
  - `PlatformCapabilities`: not in the resource, but maybe CloudFormation will take an educated guess, since the ResourceRequirements states
 
@@ -184,6 +183,8 @@ RequestId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 Why is this so? I had read the [ResourceRequirements documentation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-resourcerequirement.html) 
 where it was explicity saying I set decimal values (1 for 1GB of RAM) when using Fargate.
+
+> For jobs running on Fargate resources, then value is the hard limit (in GiB), represented in decimal form, and must match one of the supported values (0.5 and whole numbers between 1 and 30, inclusive) and the VCPU values must be one of the values supported for that memory value
 
 ```
 An error occurred (ClientException) when calling the RegisterJobDefinition operation: 
