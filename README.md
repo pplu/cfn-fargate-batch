@@ -239,7 +239,9 @@ So after lots of pain, here we have **a working** Batch Fargate CloudFormation r
 ```
 
 Note that I have also eliminated the `"awslogs-region": "us-east-1"` option from the LogConfiguration Options, since the 
-console didn't show that option existed, so I decided to go without it.
+console didn't show that option existed, so I decided to go without it. Later I found all the configuration options 
+[https://docs.aws.amazon.com/batch/latest/userguide/using_awslogs.html](here).
+
 
 # Conclusions
 
