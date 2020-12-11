@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: 'AWS Batch via Fargate'
+Resources:
+  ComputeEnvironment:
+    Type: AWS::Batch::ComputeEnvironment
+    Properties:
+      Type: MANAGED
+      State: ENABLED
+      ServiceRole: !Ref ServiceRole
+      ComputeResources:
+        Type: FARGATE
+        MaxvCpus: 1
+        Subnets:
+        - !Ref YourSubnet1
+        - !Ref YourSubnet2
+        SecurityGroupIds:
+        - !Ref JobSG
+  ServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'batch.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AWSBatchServiceRole'
+  JobQueue:
+    Type: AWS::Batch::JobQueue
+    Properties:
+      ComputeEnvironmentOrder:
+        - ComputeEnvironment: !Ref ComputeEnvironment
+          Order: 1
+      Priority: 1
+      State: ENABLED
+  JobSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref YourVpcId
+      GroupDescription: 'Security Group for Batch job'
+  JobDefinition:
+    Type: AWS::Batch::JobDefinition
+    Properties:
+      Type: container
+      JobDefinitionName: { Ref: "AWS::StackName" }
+      PlatformCapabilities:
+      - FARGATE
+      Timeout:
+        AttemptDurationSeconds: 30
+      RetryStrategy:
+        Attempts: 1
+      ContainerProperties:
+        Command:
+        - echo
+        - hello
+        - world
+        Image: 'debian:latest'
+        NetworkConfiguration:
+          AssignPublicIp: ENABLED
+        ResourceRequirements:
+        - Type: VCPU
+          Value: 0.5
+        - Type: MEMORY
+          Value: 1024
+        JobRoleArn: !GetAtt JobRole.Arn
+        ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+        LogConfiguration:
+          LogDriver: awslogs
+          Options:
+            "awslogs-group": !Ref LogGroup
+            "awslogs-stream-prefix": "prefix"
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+     AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'ecs-tasks.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+     ManagedPolicyArns:
+     - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+  JobRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: 'Allow'
+            Principal:
+              Service:
+                - 'ecs-tasks.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      # Policy for the Job to access resources on AWS. Adapt as necessary
+      Policies:
+      - PolicyName: BucketAccess
+        PolicyDocument:
+          Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action: [ 's3:GetObject', 's3:PutObject' ]
+              Resource:
+              - !Join ['', ['arn:aws:s3:::', { Ref: TodoBucket }, '/*' ] ]
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join [ '', [ '/', { Ref: 'AWS::StackName' }, '/log' ] ]
+      RetentionInDays: 14

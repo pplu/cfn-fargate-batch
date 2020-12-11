@@ -245,7 +245,9 @@ console didn't show that option existed, so I decided to go without it. Later I 
 
 # Conclusions
 
-You may have a hard time getting Batch running Fargate with CloudFormation. I hope I've saved you the pain of going through all the guessing, time and pain.
+You may have a hard time getting Batch running Fargate with CloudFormation. I hope I've saved you the pain of going through
+all the guessing, time and pain. Here you have a [batch-fagate.yaml](complete template). There are a couple of unresolved 
+references that you need to adapt to your use case.
 
 As for AWS:
  - The CloudFormation documentation for Fargate Batch is clearly lacking
