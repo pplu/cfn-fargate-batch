@@ -194,9 +194,8 @@ RequestId: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 
 Something here is fishy, because in the launch article the MEMORY parameter is '512'...
 
-I think I'll approach the problem from another angle. I'll try to hand-configure a JobDefinition on the console. 
-Lots of tests on the AWS console (which also has some quircky behaviors when doing Fargate Batch) get me convinced that
-everything **should** work.
+So start to approch the the problem from another angle. Instead of *CloudFormating* my way forward, I tried to hand-configure a JobDefinition on the console. 
+Lots of tests on the AWS console (which also has some quircky behaviors when doing Fargate Batch) get me convinced that everything **should** work.
 
 Then a breakthrough. Out of desperation I add two undocumented properties to the JobDescription: `FargatePlatformConfiguration` and `PlatformCapabilites`.
 
@@ -247,7 +246,7 @@ console didn't show that option existed, so I decided to go without it. Later I 
 # Conclusions
 
 You may have a hard time getting Batch running Fargate with CloudFormation. I hope I've saved you the pain of going through
-all the guessing, time and pain. Here you have a [batch-fagate.yaml](complete template). There are a couple of unresolved 
+all the guessing, time and pain. Here you have a [complete template](batch-fagate.yaml). There are a couple of unresolved 
 references that you need to adapt to your use case.
 
 As for AWS:
